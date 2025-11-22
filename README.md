@@ -6,15 +6,35 @@ This folder contains a fully automated Claude Code multi-agent development pipel
 
 The agents work together in a coordinated sequence to process user requests and generate code:
 
-```
-User Request → XML Generator → Router → Specialized Agents → Output
+```mermaid
+flowchart TD
+    User([User Request]) --> XML[XML Generator]
+    XML --> Router{Router}
+    
+    Router -->|Backend Task| Backend[Backend Developer]
+    Router -->|Frontend Task| Frontend[Frontend React Developer]
+    
+    subgraph Frontend_Delegation [Frontend Delegation]
+        direction TB
+        Frontend --> HTML[HTML Agent]
+        Frontend --> React[React Component Agent]
+        Frontend --> CSS[CSS Styling Agent]
+    end
+    
+    Backend --> Output([Output])
+    HTML --> Output
+    React --> Output
+    CSS --> Output
+    
+    style User fill:#f9f,stroke:#333,stroke-width:2px
+    style Output fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
 ## 🤖 Agents
 
 ### Core Infrastructure
 
-#### **explore-on-diet-coke.md**
+#### **explore-on-diet-coke**
 - **Role**: Project context analyzer
 - **Trigger**: Automatically runs on workspace load
 - **Responsibilities**: 
@@ -24,7 +44,7 @@ User Request → XML Generator → Router → Specialized Agents → Output
   - Generates project context XML file
   - Saves output to `/project-context/context.xml`
 
-#### **xml-generator.md**
+#### **xml-generator**
 - **Role**: Request-to-specification converter
 - **Trigger**: First step for every user prompt
 - **Responsibilities**:
@@ -34,7 +54,7 @@ User Request → XML Generator → Router → Specialized Agents → Output
   - Determines target agent for routing
   - Outputs XML only (no code generation)
 
-#### **router.md**
+#### **router**
 - **Role**: Task dispatcher
 - **Trigger**: After XML generation
 - **Responsibilities**:
@@ -43,7 +63,7 @@ User Request → XML Generator → Router → Specialized Agents → Output
   - Never generates code or modifies XML
   - Ensures tasks reach correct specialized agent
 
-#### **pipeline-initializer.md**
+#### **pipeline-initializer**
 - **Role**: Pipeline memory and announcer
 - **Trigger**: Automatically on workspace load
 - **Responsibilities**:
@@ -54,7 +74,7 @@ User Request → XML Generator → Router → Specialized Agents → Output
 
 ### Specialized Workers
 
-#### **backend-developer.md**
+#### **backend-developer**
 - **Role**: Backend code generator
 - **Trigger**: Router activates when backend work is needed
 - **Responsibilities**:
@@ -63,7 +83,7 @@ User Request → XML Generator → Router → Specialized Agents → Output
   - Only responds to Router instructions
   - Does not accept direct user prompts
 
-#### **frontend-react-developer.md**
+#### **frontend-react-developer**
 - **Role**: Frontend task delegator
 - **Trigger**: Router activates for frontend requests
 - **Responsibilities**:
@@ -74,7 +94,7 @@ User Request → XML Generator → Router → Specialized Agents → Output
     - `css-styling-agent` → CSS/styling
   - Does not generate UI code directly
 
-#### **html-frontend-agent.md**
+#### **html-frontend-agent**
 - **Role**: HTML markup generator
 - **Trigger**: Router activates when HTML is needed
 - **Responsibilities**:
@@ -82,7 +102,7 @@ User Request → XML Generator → Router → Specialized Agents → Output
   - Remains inactive unless Router invokes it
   - Only responds to Router instructions
 
-#### **react-component-agent.md**
+#### **react-component-agent**
 - **Role**: React component generator
 - **Trigger**: Router activates when React components are needed
 - **Responsibilities**:
@@ -90,7 +110,7 @@ User Request → XML Generator → Router → Specialized Agents → Output
   - Remains inactive unless Router invokes it
   - Only responds to Router instructions
 
-#### **css-styling-agent.md**
+#### **css-styling-agent**
 - **Role**: CSS and styling generator
 - **Trigger**: Router activates when styling is needed
 - **Responsibilities**:
@@ -123,15 +143,15 @@ User Request → XML Generator → Router → Specialized Agents → Output
 agents/
 ├── README.md                      (this file)
 ├── CLAUDE.md                      (pipeline rules & documentation)
-├── explore-on-diet-coke.md        (project context analyzer)
-├── pipeline-initializer.md        (pipeline announcer)
-├── xml-generator.md               (request converter)
-├── router.md                      (task dispatcher)
-├── backend-developer.md           (backend code generator)
-├── frontend-react-developer.md    (frontend delegator)
-├── html-frontend-agent.md         (HTML generator)
-├── react-component-agent.md       (React component generator)
-└── css-styling-agent.md           (CSS/styling generator)
+├── explore-on-diet-coke/          (project context analyzer)
+├── pipeline-initializer/          (pipeline announcer)
+├── xml-generator/                 (request converter)
+├── router/                        (task dispatcher)
+├── backend-developer/             (backend code generator)
+├── frontend-react-developer/      (frontend delegator)
+├── html-frontend-agent/           (HTML generator)
+├── react-component-agent/         (React component generator)
+└── css-styling-agent/             (CSS/styling generator)
 ```
 
 ## 🎯 Key Principles
@@ -142,6 +162,39 @@ agents/
 - **Separation of Concerns**: Each agent handles one specific aspect
 - **Deterministic Processing**: XML format ensures consistent, reproducible results
 - **Automatic Startup**: Core agents (explore, initializer) run without user confirmation
+
+## 📦 Installation & Setup
+
+This pipeline is platform-agnostic and works seamlessly on **macOS, Windows, and Linux**.
+
+### Prerequisites
+- [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview) installed and authenticated.
+
+### How to Add Agents
+
+#### Option 1: New Project
+1. Clone this repository:
+   ```bash
+   git clone <repository-url> my-new-project
+   cd my-new-project
+   ```
+2. Start Claude Code:
+   ```bash
+   claude
+   ```
+
+#### Option 2: Existing Project
+1. Copy the entire `agents/` directory into your project root.
+2. Ensure `CLAUDE.md` is in the root of your project (or merge its contents if you already have one).
+3. Start Claude Code:
+   ```bash
+   claude
+   ```
+
+### Platform-Specific Notes
+
+- **macOS / Linux**: Ensure you have permissions to run `claude` in your terminal.
+- **Windows**: Run via PowerShell or Command Prompt. If using WSL, follow Linux instructions.
 
 ## 🚀 Usage
 
