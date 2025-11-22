@@ -131,7 +131,7 @@ flowchart TD
 
 ## 🔄 Workflow
 
-1. **Startup** → `explore-on-diet-coke` & `pipeline-initializer` run automatically
+1. **Initialization** → User runs `/init-pipeline` to trigger context analysis and pipeline setup
 2. **User Request** → `xml-generator` converts to XML specification
 3. **Routing** → `router` reads target agent and forwards
 4. **Execution** → Specialized agent processes and generates output
@@ -141,6 +141,7 @@ flowchart TD
 
 ```
 agents/
+├── .claude/                       (commands and configuration)
 ├── README.md                      (this file)
 ├── CLAUDE.md                      (pipeline rules & documentation)
 ├── explore-on-diet-coke/          (project context analyzer)
@@ -161,7 +162,7 @@ agents/
 - **Single Entry Point**: All requests go through xml-generator first
 - **Separation of Concerns**: Each agent handles one specific aspect
 - **Deterministic Processing**: XML format ensures consistent, reproducible results
-- **Automatic Startup**: Core agents (explore, initializer) run without user confirmation
+- **Command-Based Initialization**: Single command (`/init-pipeline`) sets up the entire environment and context
 
 ## 📦 Installation & Setup
 
@@ -184,7 +185,8 @@ This pipeline is platform-agnostic and works seamlessly on **macOS, Windows, and
    ```
 
 #### Option 2: Existing Project
-1. Copy the entire `agents/` directory into your project root.
+1. Copy the contents of the `agents/` directory into your project root.
+   - **Important**: Ensure you copy the hidden `.claude` directory as well, as it contains the initialization commands.
 2. Ensure `CLAUDE.md` is in the root of your project (or merge its contents if you already have one).
 3. Start Claude Code:
    ```bash
@@ -200,11 +202,23 @@ This pipeline is platform-agnostic and works seamlessly on **macOS, Windows, and
 
 This pipeline is designed to be **completely automatic**. Simply:
 
-1. Open Claude Code in this workspace
-2. The pipeline initializes automatically
-3. Make a request to Claude
-4. Your request flows through the entire pipeline
-5. You receive the generated output
+1. **Open Claude Code** in your project root.
 
-No manual agent selection or configuration is required—the system handles everything automatically.
+2. **Initialize the Pipeline** by running the following slash command:
+   ```bash
+   /init-pipeline
+   ```
+   This will automatically:
+   - Run `explore-on-diet-coke` to analyze your project structure
+   - Run `pipeline-announcer` to set up routing rules and agent roles
+
+3. **Make a Request** to Claude describing your task.
+   - Example: "Create a login page with React and Tailwind"
+   - Example: "Add a new API endpoint for user registration"
+
+4. **Receive Output**
+   - Your request flows through `xml-generator` → `router` → Specialized Agents
+   - Code is generated and presented for your review
+
+> **Note**: You can run `/init-pipeline` at any time to re-scan the project context if you make significant manual changes.
 
